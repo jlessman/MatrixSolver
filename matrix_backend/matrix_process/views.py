@@ -5,7 +5,6 @@ import matplotlib.pyplot as plt
 
 from tensorflow.keras.models import Sequential #Neural stuff
 from tensorflow.keras.layers import Dense
-from tensorflow.keras.utils import to_categorical
 
 import numpy as np 
 
@@ -21,7 +20,7 @@ def load_model():
         loss = 'categorical_crossentropy',
         metrics = ['accuracy']
         )
-    model.load_weights('/Users/johnbensen/Documents/matrixbullshit/matrix_backend/matrix_process/model.h5')
+    model.load_weights('model.h5')
 
     return model
 
@@ -97,8 +96,8 @@ def process_image(request):
     colLength = (topY - botY) // 3
     results   = []
     
-    for row in range(3):
-        for col in range(3):
+    for col in range(3):
+        for row in range(3):
             bot_x = botX + row * rowLength 
             top_x = bot_x + rowLength
 
@@ -114,7 +113,7 @@ def process_image(request):
             # transforming image
             tempImg = tempImg.reshape((-1,784))
             # caluclations
-            number = np.argmax(model.predict(tempImg), axis = 1)
-            results.append(number[0])
+            number = np.argmax(model.predict(tempImg))
+            results.append(number)
 
     return HttpResponse(str(results))
