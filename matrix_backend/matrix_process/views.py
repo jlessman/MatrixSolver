@@ -83,37 +83,6 @@ def compress_image(image):
 
     return compressedImage
 
-def process_image(image):
-    # topX, topY = 1950, 2100
-    # botX, botY = 960, 1150
-
-    # image     = np.sum(image, axis=2)
-    # rowLength = (topX - botX) // 3
-    # colLength = (topY - botY) // 3
-    # results   = []
-    
-    # for row in range(3):
-    #     for col in range(3):
-    #         bot_x = botX + row * rowLength 
-    #         top_x = bot_x + rowLength
-
-    #         bot_y = botY + col * colLength
-    #         top_y = bot_y + colLength
-
-    #         tempImg = image[bot_y:top_y, bot_x:top_x]
-    #         tempImg = np.abs((tempImg - np.max(tempImg)) / np.max(tempImg))
-    #         tempImg = remove_white_space(tempImg)
-    #         tempImg = convert_to_square(tempImg)
-    #         tempImg = compress_image(tempImg)
-
-    #         # transforming image
-    #         tempImg = tempImg.reshape((-1,784))
-    #         # caluclations
-    #         number = np.argmax(model.predict(tempImg), axis = 1)
-    #         results.append(number)
-
-    return None
-
 model = load_model()
 
 @csrf_exempt
@@ -146,8 +115,6 @@ def process_image(request):
             tempImg = tempImg.reshape((-1,784))
             # caluclations
             number = np.argmax(model.predict(tempImg), axis = 1)
-            results.append(number)
+            results.append(number[0])
 
-    print(results)
-
-    return HttpResponse(status=200)
+    return HttpResponse(str(results))
