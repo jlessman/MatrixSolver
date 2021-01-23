@@ -25,12 +25,14 @@ SECRET_KEY = '2be%1&o)u#f#_o5(axu@lq5^6yfqhiesg1#khtd&&t3s5rd(u+'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
 
 INSTALLED_APPS = [
+    'matrix_process',
+    
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
