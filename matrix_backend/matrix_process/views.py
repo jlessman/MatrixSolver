@@ -63,12 +63,13 @@ def convert_to_square(image):
     height, width = image.shape
 
     if height > width:
-        blankMatrix = np.zeros(((height - width) // 2, height))
-        image       = np.concatenate((blankMatrix, image, blankMatrix), axis=0)
+        blankMatrix = np.zeros((height, (height - width) // 2))
+        image       = np.concatenate((blankMatrix, image, blankMatrix), axis=1)
 
     if width > height:
-        blankMatrix = np.zeros((height, (width - height) // 2))
-        image       = np.concatenate((blankMatrix, image, blankMatrix), axis=1)
+        blankMatrix = np.zeros(((width - height) // 2, height))
+        image       = np.concatenate((blankMatrix, image, blankMatrix), axis=0)
+
 
     image = np.pad(image, [(20, 20), (20, 20)], mode='constant')
     image = image / np.max(image)
@@ -98,11 +99,11 @@ def process_image(request):
 
     rawImage = np.array(img.imread('test.jpg'))
 
-    topXRatio = float(request.POST['top_x'])
-    botXRatio = float(request.POST['bot_x'])
+    topXRatio = 1 - float(request.POST['bot_x'])
+    botXRatio = 1 - float(request.POST['top_x'])
     topYRatio = float(request.POST['top_y'])
     botYRatio = float(request.POST['bot_y'])
-    print(topXRatio, botXRatio, topYRatio, botYRatio)
+
     image = np.sum(rawImage, axis=2)
 
     totalWidth = len(image[0])
@@ -113,25 +114,23 @@ def process_image(request):
     topY = int(topYRatio * totalHeight)
     botY = int(botYRatio * totalHeight)
 
-    rowLength = (topX - botX) // 3
-    colLength = (topY - botY) // 3
-    matrix = []
+    image = np.rot90(image[botX:topX, botY:topY], k=3)
 
-    plt.figure(1)
-    plt.imshow(image[botX:topX, botY, topY])
-    plt.savefig('temp.png')
+    colLength, rowLength = image.shape
+    colLength, rowLength = colLength // 3, rowLength // 3
+    matrix = []
 
     for col in range(3):
         results = []
         for row in range(3):
-            bot_x = botX + row * rowLength 
+            bot_x = row * rowLength 
             top_x = bot_x + rowLength
 
-            bot_y = botY + col * colLength
+            bot_y = col * colLength
             top_y = bot_y + colLength
 
             tempImg = image[bot_y:top_y, bot_x:top_x]
-            tempImg = np.abs((tempImg - np.max(tempImg)) / np.max(tempImg))
+            tempImg = np.abs((tempImg / np.max(tempImg)) - 1)
             tempImg = remove_white_space(tempImg)
             tempImg = convert_to_square(tempImg)
             tempImg = compress_image(tempImg)
