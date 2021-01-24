@@ -4,5 +4,5 @@ from .views import *
 
 urlpatterns = [
     path('raw/', process_image),
-    path('test2/', Test),
+    # path('test2/', Test),
 ]

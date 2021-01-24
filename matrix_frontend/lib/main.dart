@@ -72,11 +72,38 @@ class _CameraScreenState extends State<CameraScreen> {
     }
   }
 
-  // Future<void> _sendMatrix(File file) async {
-  //   var request = http.MultipartRequest(
-  //     'POST', Uri.parse
-  //   )
-  // }
+  Future<void> _sendMatrix() async {
+    double botX;
+    double topX;
+    double botY;
+    double topY;
+
+    if (_xVal_1 < _xVal_2) {
+      botX = _xVal_1;
+      topX = _xVal_2;
+    } else {
+      botX = _xVal_2;
+      topX = _xVal_1;
+    }
+    if (_yVal_1 < _yVal_2) {
+      botY = _yVal_1;
+      topY = _yVal_2;
+    } else {
+      botY = _yVal_2;
+      topY = _yVal_1;
+    }
+
+    var request = http.MultipartRequest(
+        'POST', Uri.parse('http://10.192.38.26:8000/image/raw/'));
+    request.fields['bot_x'] = botX.toString();
+    request.fields['top_x'] = topX.toString();
+    request.fields['bot_y'] = botY.toString();
+    request.fields['top_y'] = topY.toString();
+
+    request.files.add(await http.MultipartFile.fromPath('media', imagePath));
+    print(request.files);
+    var response = await request.send();
+  }
 
   @override
   Widget build(BuildContext context) {

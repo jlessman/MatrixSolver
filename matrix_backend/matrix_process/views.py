@@ -1,13 +1,15 @@
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
-import matplotlib.pyplot as plt
+from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
 
 from tensorflow.keras.models import Sequential #Neural stuff
 from tensorflow.keras.layers import Dense
 
 import numpy as np 
-
+import matplotlib.pyplot as plt
+import matplotlib.image as img 
 import copy 
 
 def load_model():
@@ -20,7 +22,7 @@ def load_model():
         loss = 'categorical_crossentropy',
         metrics = ['accuracy']
         )
-    model.load_weights('model.h5')
+    model.load_weights('/Users/johnbensen/Documents/matrixbullshit/matrix_backend/matrix_process/model.h5')
 
     return model
 
@@ -86,8 +88,11 @@ model = load_model()
 
 @csrf_exempt
 def process_image(request):
-    rawImage = plt.imread(request.FILES['media'])
-    
+    image = request.FILES['media']
+    path = default_storage.save('test.jpg', ContentFile(image.read()))
+
+    rawImage = img.imread('test.jpg')
+
     topXRatio, botXRatio, topYRatio, botYRatio
     
     image = np.sum(rawImage, axis=2)
