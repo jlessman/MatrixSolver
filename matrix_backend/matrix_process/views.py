@@ -20,7 +20,7 @@ def load_model():
         loss = 'categorical_crossentropy',
         metrics = ['accuracy']
         )
-    model.load_weights('/Users/johnbensen/Documents/matrixbullshit/matrix_backend/matrix_process/model.h5')
+    model.load_weights('model.h5')
 
     return model
 
@@ -87,11 +87,19 @@ model = load_model()
 @csrf_exempt
 def process_image(request):
     rawImage = plt.imread(request.FILES['media'])
-
-    topX, topY = 1950, 2100
-    botX, botY = 960, 1150
-
-    image     = np.sum(rawImage, axis=2)
+    
+    topXRatio, botXRatio, topYRatio, botYRatio
+    
+    image = np.sum(rawImage, axis=2)
+    
+    totalWidth = len(image[0])
+    totalHeight = len(image)
+    
+    topX = topXRatio * totalWidth
+    topY = topYRatio * totalHeight
+    botX = botXRatio * totalWidth
+    botY = botYRatio * totalHeight
+    
     rowLength = (topX - botX) // 3
     colLength = (topY - botY) // 3
     matrix = []
@@ -116,17 +124,5 @@ def process_image(request):
             # caluclations
             number = np.argmax(model.predict(tempImg))
             results.append(number)
-<<<<<<< HEAD
-
-    return HttpResponse(str(results))
-
-@csrf_exempt
-def Test(request):
-    X = request.POST['matrix']
-    
-    print(X)
-    return HttpResponse("Anything but hello world")
-=======
         matrix.append(results)
     return HttpResponse(str(matrix))
->>>>>>> 33d1bbdf761de59771833254806b062e4fd9fe30
