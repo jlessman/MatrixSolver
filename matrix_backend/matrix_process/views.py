@@ -94,9 +94,10 @@ def process_image(request):
     image     = np.sum(rawImage, axis=2)
     rowLength = (topX - botX) // 3
     colLength = (topY - botY) // 3
-    results   = []
+    matrix = []
     
     for col in range(3):
+        results   = []
         for row in range(3):
             bot_x = botX + row * rowLength 
             top_x = bot_x + rowLength
@@ -115,5 +116,5 @@ def process_image(request):
             # caluclations
             number = np.argmax(model.predict(tempImg))
             results.append(number)
-
-    return HttpResponse(str(results))
+        matrix.append(results)
+    return HttpResponse(str(matrix))
