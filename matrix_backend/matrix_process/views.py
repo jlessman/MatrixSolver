@@ -8,8 +8,14 @@ from tensorflow.keras.models import Sequential #Neural stuff
 from tensorflow.keras.layers import Dense
 
 import numpy as np 
+<<<<<<< HEAD
 import matplotlib.pyplot as plt
 import matplotlib.image as img 
+=======
+import ast
+import sympy
+
+>>>>>>> 54655c06ad6a703bdaa50b636a49e787dcbaad35
 import copy 
 
 def load_model():
@@ -22,7 +28,11 @@ def load_model():
         loss = 'categorical_crossentropy',
         metrics = ['accuracy']
         )
+<<<<<<< HEAD
     model.load_weights('/Users/johnbensen/Documents/matrixbullshit/matrix_backend/matrix_process/model.h5')
+=======
+    model.load_weights('C:/Users/jless/Documents/MatrixSolver-1/matrix_backend/matrix_process/model.h5')
+>>>>>>> 54655c06ad6a703bdaa50b636a49e787dcbaad35
 
     return model
 
@@ -129,5 +139,37 @@ def process_image(request):
             # caluclations
             number = np.argmax(model.predict(tempImg))
             results.append(number)
-        matrix.append(results)
-    return HttpResponse(str(matrix))
+
+    return HttpResponse(str(results))
+
+@csrf_exempt
+def determinant(request):
+    Matrix = request.POST['matrix']
+    Matrix= str(Matrix)
+    Matrix = ast.literal_eval(Matrix)
+    Matrix = np.array(Matrix)
+    determinant = np.linalg.det(Matrix)
+    determinant = str(determinant)
+    return HttpResponse(determinant)
+
+@csrf_exempt
+def eigenvalue(request):
+    Matrix = request.POST['matrix']
+    Matrix= str(Matrix)
+    Matrix = ast.literal_eval(Matrix)
+    Matrix = np.array(Matrix)
+    eigenvalues = np.linalg.eig(Matrix)
+    eigenvalues = str(eigenvalues)
+    return HttpResponse(eigenvalues)
+    
+@csrf_exempt
+def solve(request):
+    matrix = request.POST['matrix']
+    matrix= str(matrix)
+    matrix = ast.literal_eval(matrix)
+    matrix=sympy.Matrix(matrix).rref()
+    newMatrix = (matrix[0].tolist())
+    solutions = np.array(matrix[1])
+    print(newMatrix)
+    newMatrix = str(newMatrix)
+    return HttpResponse(newMatrix)
