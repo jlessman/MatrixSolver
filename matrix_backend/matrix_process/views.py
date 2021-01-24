@@ -90,7 +90,7 @@ def process_image(request):
     
     topXRatio, botXRatio, topYRatio, botYRation
     
-    image     = np.sum(rawImage, axis=2)
+    image = np.sum(rawImage, axis=2)
     
     totalWidth = len(image[0])
     totalHeight = len(image)
