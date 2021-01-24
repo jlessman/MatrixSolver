@@ -7,8 +7,6 @@ from tensorflow.keras.models import Sequential #Neural stuff
 from tensorflow.keras.layers import Dense
 
 import numpy as np 
-import ast
-import sympy
 
 import copy 
 
@@ -22,7 +20,7 @@ def load_model():
         loss = 'categorical_crossentropy',
         metrics = ['accuracy']
         )
-    model.load_weights('C:/Users/jless/Documents/MatrixSolver-1/matrix_backend/matrix_process/model.h5')
+    model.load_weights('model.h5')
 
     return model
 
@@ -89,11 +87,19 @@ model = load_model()
 @csrf_exempt
 def process_image(request):
     rawImage = plt.imread(request.FILES['media'])
-
-    topX, topY = 1950, 2100
-    botX, botY = 960, 1150
-
-    image     = np.sum(rawImage, axis=2)
+    
+    topXRatio, botXRatio, topYRatio, botYRatio
+    
+    image = np.sum(rawImage, axis=2)
+    
+    totalWidth = len(image[0])
+    totalHeight = len(image)
+    
+    topX = topXRatio * totalWidth
+    topY = topYRatio * totalHeight
+    botX = botXRatio * totalWidth
+    botY = botYRatio * totalHeight
+    
     rowLength = (topX - botX) // 3
     colLength = (topY - botY) // 3
     matrix = []
@@ -118,37 +124,5 @@ def process_image(request):
             # caluclations
             number = np.argmax(model.predict(tempImg))
             results.append(number)
-
-    return HttpResponse(str(results))
-
-@csrf_exempt
-def determinant(request):
-    Matrix = request.POST['matrix']
-    Matrix= str(Matrix)
-    Matrix = ast.literal_eval(Matrix)
-    Matrix = np.array(Matrix)
-    determinant = np.linalg.det(Matrix)
-    determinant = str(determinant)
-    return HttpResponse(determinant)
-
-@csrf_exempt
-def eigenvalue(request):
-    Matrix = request.POST['matrix']
-    Matrix= str(Matrix)
-    Matrix = ast.literal_eval(Matrix)
-    Matrix = np.array(Matrix)
-    eigenvalues = np.linalg.eig(Matrix)
-    eigenvalues = str(eigenvalues)
-    return HttpResponse(eigenvalues)
-    
-@csrf_exempt
-def solve(request):
-    matrix = request.POST['matrix']
-    matrix= str(matrix)
-    matrix = ast.literal_eval(matrix)
-    matrix=sympy.Matrix(matrix).rref()
-    newMatrix = (matrix[0].tolist())
-    solutions = np.array(matrix[1])
-    print(newMatrix)
-    newMatrix = str(newMatrix)
-    return HttpResponse(newMatrix)
+        matrix.append(results)
+    return HttpResponse(str(matrix))
