@@ -20,7 +20,7 @@ def load_model():
         loss = 'categorical_crossentropy',
         metrics = ['accuracy']
         )
-    model.load_weights('model.h5')
+    model.load_weights('/Users/johnbensen/Documents/matrixbullshit/matrix_backend/matrix_process/model.h5')
 
     return model
 
@@ -117,3 +117,10 @@ def process_image(request):
             results.append(number)
 
     return HttpResponse(str(results))
+
+@csrf_exempt
+def Test(request):
+    X = request.POST['matrix']
+    
+    print(X)
+    return HttpResponse("Anything but hello world")
