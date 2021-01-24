@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'dart:io';
+import 'dart:convert';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart';
 import 'package:flutter/services.dart';
@@ -72,25 +73,25 @@ class _CameraScreenState extends State<CameraScreen> {
     }
   }
 
-  Future<void> _sendMatrix() async {
+  Future<void> _sendMatrix(double widgetWidth, double widgetHeight) async {
     double botX;
     double topX;
     double botY;
     double topY;
 
     if (_xVal_1 < _xVal_2) {
-      botX = _xVal_1;
-      topX = _xVal_2;
+      botX = _xVal_1 / widgetWidth;
+      topX = _xVal_2 / widgetWidth;
     } else {
-      botX = _xVal_2;
-      topX = _xVal_1;
+      botX = _xVal_2 / widgetWidth;
+      topX = _xVal_1 / widgetWidth;
     }
     if (_yVal_1 < _yVal_2) {
-      botY = _yVal_1;
-      topY = _yVal_2;
+      botY = _yVal_1 / widgetHeight;
+      topY = _yVal_2 / widgetHeight;
     } else {
-      botY = _yVal_2;
-      topY = _yVal_1;
+      botY = _yVal_2 / widgetHeight;
+      topY = _yVal_1 / widgetHeight;
     }
 
     var request = http.MultipartRequest(
@@ -103,10 +104,14 @@ class _CameraScreenState extends State<CameraScreen> {
     request.files.add(await http.MultipartFile.fromPath('media', imagePath));
     print(request.files);
     var response = await request.send();
+    // print(json.decode(response.body));
   }
 
   @override
   Widget build(BuildContext context) {
+    double widgetWidth = MediaQuery.of(context).size.width;
+    double widgetHeight = 500;
+
     return Column(
       children: [
         Container(
@@ -120,8 +125,8 @@ class _CameraScreenState extends State<CameraScreen> {
                 if (snapshot.connectionState == ConnectionState.done) {
                   if (showCapturedPhoto) {
                     return Container(
-                      width: MediaQuery.of(context).size.width,
-                      height: MediaQuery.of(context).size.height,
+                      width: widgetWidth,
+                      height: widgetHeight,
                       decoration: BoxDecoration(
                         image: DecorationImage(
                           fit: BoxFit.fill,
@@ -200,7 +205,7 @@ class _CameraScreenState extends State<CameraScreen> {
           ),
           child: Slider(
             min: 0,
-            max: 100,
+            max: widgetWidth,
             value: _xVal_1,
             onChanged: (value) {
               setState(() {
@@ -219,7 +224,7 @@ class _CameraScreenState extends State<CameraScreen> {
           ),
           child: Slider(
             min: 0,
-            max: 100,
+            max: widgetWidth,
             value: _xVal_2,
             onChanged: (value) {
               setState(() {
@@ -238,7 +243,7 @@ class _CameraScreenState extends State<CameraScreen> {
           ),
           child: Slider(
             min: 0,
-            max: 100,
+            max: widgetHeight,
             value: _yVal_1,
             onChanged: (value) {
               setState(() {
@@ -257,7 +262,7 @@ class _CameraScreenState extends State<CameraScreen> {
           ),
           child: Slider(
             min: 0,
-            max: 100,
+            max: widgetHeight,
             value: _yVal_2,
             onChanged: (value) {
               setState(() {
@@ -266,7 +271,9 @@ class _CameraScreenState extends State<CameraScreen> {
             },
           ),
         ),
-        FlatButton(onPressed: () => _sendMatrix(), child: Text("Calculate")),
+        FlatButton(
+            onPressed: () => _sendMatrix(widgetWidth, widgetHeight),
+            child: Text("Calculate")),
       ],
     );
   }

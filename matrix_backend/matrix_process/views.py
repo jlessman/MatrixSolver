@@ -1,4 +1,4 @@
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 from django.core.files.storage import default_storage
@@ -8,14 +8,12 @@ from tensorflow.keras.models import Sequential #Neural stuff
 from tensorflow.keras.layers import Dense
 
 import numpy as np 
-<<<<<<< HEAD
 import matplotlib.pyplot as plt
 import matplotlib.image as img 
-=======
+
 import ast
 import sympy
 
->>>>>>> 54655c06ad6a703bdaa50b636a49e787dcbaad35
 import copy 
 
 def load_model():
@@ -28,11 +26,8 @@ def load_model():
         loss = 'categorical_crossentropy',
         metrics = ['accuracy']
         )
-<<<<<<< HEAD
+
     model.load_weights('/Users/johnbensen/Documents/matrixbullshit/matrix_backend/matrix_process/model.h5')
-=======
-    model.load_weights('C:/Users/jless/Documents/MatrixSolver-1/matrix_backend/matrix_process/model.h5')
->>>>>>> 54655c06ad6a703bdaa50b636a49e787dcbaad35
 
     return model
 
@@ -66,14 +61,14 @@ def remove_white_space(image):
 
 def convert_to_square(image):
     height, width = image.shape
-    
+
     if height > width:
-        blankMatrix = np.zeros((height, (height - width) // 2))
-        image       = np.concatenate((blankMatrix, image, blankMatrix), axis=1)
+        blankMatrix = np.zeros(((height - width) // 2, height))
+        image       = np.concatenate((blankMatrix, image, blankMatrix), axis=0)
 
     if width > height:
-        blankMatrix = np.zeros(((width - height) // 2, height))
-        image       = np.concatenate((blankMatrix, image, blankMatrix), axis=0)
+        blankMatrix = np.zeros((height, (width - height) // 2))
+        image       = np.concatenate((blankMatrix, image, blankMatrix), axis=1)
 
     image = np.pad(image, [(20, 20), (20, 20)], mode='constant')
     image = image / np.max(image)
@@ -101,26 +96,33 @@ def process_image(request):
     image = request.FILES['media']
     path = default_storage.save('test.jpg', ContentFile(image.read()))
 
-    rawImage = img.imread('test.jpg')
+    rawImage = np.array(img.imread('test.jpg'))
 
-    topXRatio, botXRatio, topYRatio, botYRatio
-    
+    topXRatio = float(request.POST['top_x'])
+    botXRatio = float(request.POST['bot_x'])
+    topYRatio = float(request.POST['top_y'])
+    botYRatio = float(request.POST['bot_y'])
+    print(topXRatio, botXRatio, topYRatio, botYRatio)
     image = np.sum(rawImage, axis=2)
-    
+
     totalWidth = len(image[0])
     totalHeight = len(image)
     
-    topX = topXRatio * totalWidth
-    topY = topYRatio * totalHeight
-    botX = botXRatio * totalWidth
-    botY = botYRatio * totalHeight
-    
+    topX = int(topXRatio * totalWidth)
+    botX = int(botXRatio * totalWidth)
+    topY = int(topYRatio * totalHeight)
+    botY = int(botYRatio * totalHeight)
+
     rowLength = (topX - botX) // 3
     colLength = (topY - botY) // 3
     matrix = []
-    
+    results = []
+
+    plt.figure(1)
+    plt.imshow(image[botX:topX, botY, topY])
+    plt.savefig('temp.png')
+
     for col in range(3):
-        results   = []
         for row in range(3):
             bot_x = botX + row * rowLength 
             top_x = bot_x + rowLength
@@ -133,14 +135,15 @@ def process_image(request):
             tempImg = remove_white_space(tempImg)
             tempImg = convert_to_square(tempImg)
             tempImg = compress_image(tempImg)
-
+            # print(np.round(tempImg, 2))
             # transforming image
             tempImg = tempImg.reshape((-1,784))
             # caluclations
             number = np.argmax(model.predict(tempImg))
             results.append(number)
 
-    return HttpResponse(str(results))
+    print(results)
+    return HttpResponse(status=200)
 
 @csrf_exempt
 def determinant(request):
