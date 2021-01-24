@@ -116,13 +116,13 @@ def process_image(request):
     rowLength = (topX - botX) // 3
     colLength = (topY - botY) // 3
     matrix = []
-    results = []
 
     plt.figure(1)
     plt.imshow(image[botX:topX, botY, topY])
     plt.savefig('temp.png')
 
     for col in range(3):
+        results = []
         for row in range(3):
             bot_x = botX + row * rowLength 
             top_x = bot_x + rowLength
@@ -141,8 +141,9 @@ def process_image(request):
             # caluclations
             number = np.argmax(model.predict(tempImg))
             results.append(number)
+        matrix.append(results)
 
-    print(results)
+    print(matrix)
     return HttpResponse(status=200)
 
 @csrf_exempt
