@@ -89,7 +89,6 @@ model = load_model()
 @csrf_exempt
 def process_image(request):
     rawImage = plt.imread(request.FILES['media'])
-    rawImage = plt.imread(request.FILES['media'])
     
     topXRatio, botXRatio, topYRatio, botYRatio
     
