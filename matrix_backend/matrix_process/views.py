@@ -88,7 +88,7 @@ model = load_model()
 def process_image(request):
     rawImage = plt.imread(request.FILES['media'])
     
-    topXRatio, botXRatio, topYRatio, botYRation
+    topXRatio, botXRatio, topYRatio, botYRatio
     
     image = np.sum(rawImage, axis=2)
     
@@ -98,7 +98,7 @@ def process_image(request):
     topX = topXRatio * totalWidth
     topY = topYRatio * totalHeight
     botX = botXRatio * totalWidth
-    botY = botYRation * totalHeight
+    botY = botYRatio * totalHeight
     
     rowLength = (topX - botX) // 3
     colLength = (topY - botY) // 3
